@@ -4,7 +4,7 @@ import FeaturedArtworks from "@/components/home/FeaturedArtworks";
 import Moving from "@/components/home/Moving";
 import Testimonials from "@/components/home/Testimonials";
 import WhyChoose from "@/components/home/WhyChoose";
-
+import Top from "@/components/home/Top";
 const page = () => {
   return (
     <div>
@@ -14,6 +14,7 @@ const page = () => {
       <ArtCategory />
       <WhyChoose />
 {/* artist and price plan add korbo */}
+       <Top/>
       <Testimonials />
     </div>
   );

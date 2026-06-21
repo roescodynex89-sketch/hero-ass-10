@@ -1,32 +1,36 @@
-
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaPlus, FaEdit, FaTrash, FaSpinner, FaCloudUploadAlt, FaTimes } from "react-icons/fa";
+import {
+  FaPlus,
+  FaEdit,
+  FaTrash,
+  FaSpinner,
+  FaCloudUploadAlt,
+  FaTimes,
+} from "react-icons/fa";
 import Image from "next/image";
 import { toast } from "sonner";
-// Better Auth ক্লায়েন্ট ইম্পোর্ট (তোমার পাথ অনুযায়ী ঠিক করে নিবে)
-import { authClient } from "@/lib/auth-client"; 
-// Server Actions ইম্পোর্ট
-import { 
-  getArtistArtworks, 
-  createArtwork, 
-  updateArtwork, 
-  deleteArtwork 
+
+import { authClient } from "@/lib/auth-client";
+
+import {
+  getArtistArtworks,
+  createArtwork,
+  updateArtwork,
+  deleteArtwork,
 } from "@/lib/actions/artworkActions";
 
 export default function MyArtworks() {
-  // Better Auth থেকে সেশন ও ইউজার ডাটা রিড করা
   const { data: session, isPending: sessionLoading } = authClient.useSession();
-  
+
   const [artworks, setArtworks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [uploadingImg, setUploadingImg] = useState(false);
   const [editId, setEditId] = useState(null);
 
-  // ডাইনামিক ইউজার ডাটা এক্সট্র্যাক্ট করা
   const artistEmail = session?.user?.email;
   const artistName = session?.user?.name || "Anonymous Artist";
 
@@ -35,10 +39,10 @@ export default function MyArtworks() {
     description: "",
     price: "",
     category: "",
-    imageUrl: ""
+    imageUrl: "",
   });
 
-  // 🔄 ১. ডাটা ফেচিং ইউজিং সার্ভার অ্যাকশন
+  //
   const fetchArtworks = useCallback(async () => {
     if (!artistEmail) return;
     try {
@@ -62,7 +66,6 @@ export default function MyArtworks() {
     }
   }, [artistEmail, fetchArtworks]);
 
-  // 📷 ২. imgBB ইমেজ আপলোড লজিক
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -70,16 +73,18 @@ export default function MyArtworks() {
     setUploadingImg(true);
     const toastId = toast.loading("Uploading image to imgBB...");
 
-    // এনভায়রনমেন্ট ভেরিয়েবল থেকে কী রিড করা বেস্ট প্র্যাকটিস
-    const imgBBKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY ; 
+    const imgBBKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
     const data = new FormData();
     data.append("image", file);
 
     try {
-      const res = await fetch(`https://api.imgbb.com/1/upload?key=${imgBBKey}`, {
-        method: "POST",
-        body: data,
-      });
+      const res = await fetch(
+        `https://api.imgbb.com/1/upload?key=${imgBBKey}`,
+        {
+          method: "POST",
+          body: data,
+        },
+      );
       const resData = await res.json();
 
       if (resData.success) {
@@ -95,29 +100,35 @@ export default function MyArtworks() {
     }
   };
 
-  // 💾 ৩. ফর্ম সাবমিট (CREATE & UPDATE) ইউজিং সার্ভার অ্যাকশন
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.imageUrl) return toast.error("Please upload an artwork image first");
-    if (!artistEmail) return toast.error("User session not found. Please log in.");
+    if (!formData.imageUrl)
+      return toast.error("Please upload an artwork image first");
+    if (!artistEmail)
+      return toast.error("User session not found. Please log in.");
 
-    const toastId = toast.loading(editId ? "Updating artwork..." : "Adding artwork...");
-    
+    const toastId = toast.loading(
+      editId ? "Updating artwork..." : "Adding artwork...",
+    );
+
     try {
       let result;
       if (editId) {
-        // আপডেট অপারেশন
         result = await updateArtwork(editId, formData);
       } else {
-        // ক্রিয়েট অপারেশন (ডাইনামিক নাম ও ইমেইল সহ পেলোড)
         const payload = { ...formData, artistEmail, artistName };
         result = await createArtwork(payload);
       }
 
       if (result && !result.error) {
-        toast.success(editId ? "Artwork updated successfully!" : "Artwork added successfully!", { id: toastId });
+        toast.success(
+          editId
+            ? "Artwork updated successfully!"
+            : "Artwork added successfully!",
+          { id: toastId },
+        );
         closeModal();
-        fetchArtworks(); 
+        fetchArtworks();
       } else {
         toast.error(result?.message || "Something went wrong", { id: toastId });
       }
@@ -126,7 +137,6 @@ export default function MyArtworks() {
     }
   };
 
-  // 🗑️ ৪. আর্ট ডিলিট অপারেশন ইউজিং সার্ভার অ্যাকশন
   const handleDelete = async (id) => {
     if (!confirm("Are you sure you want to delete this artwork?")) return;
 
@@ -146,7 +156,13 @@ export default function MyArtworks() {
 
   const openAddModal = () => {
     setEditId(null);
-    setFormData({ title: "", description: "", price: "", category: "", imageUrl: "" });
+    setFormData({
+      title: "",
+      description: "",
+      price: "",
+      category: "",
+      imageUrl: "",
+    });
     setIsModalOpen(true);
   };
 
@@ -157,7 +173,7 @@ export default function MyArtworks() {
       description: art.description,
       price: art.price,
       category: art.category,
-      imageUrl: art.imageUrl
+      imageUrl: art.imageUrl,
     });
     setIsModalOpen(true);
   };
@@ -167,7 +183,6 @@ export default function MyArtworks() {
     setEditId(null);
   };
 
-  // যদি Better Auth সেশন লোড হতে টাইম নেয়
   if (sessionLoading) {
     return (
       <div className="h-96 flex flex-col items-center justify-center gap-2 text-slate-400">
@@ -177,12 +192,13 @@ export default function MyArtworks() {
     );
   }
 
-  // সেশন না থাকলে প্রোটেক্টেড মেসেজ
   if (!session) {
     return (
       <div className="h-96 flex flex-col items-center justify-center text-center p-6 text-slate-400">
         <p className="text-base font-semibold text-red-500">Access Denied</p>
-        <p className="text-xs mt-1">Please log in to view your customized dashboard workspace.</p>
+        <p className="text-xs mt-1">
+          Please log in to view your customized dashboard workspace.
+        </p>
       </div>
     );
   }
@@ -192,12 +208,16 @@ export default function MyArtworks() {
       {/* Top Header Section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#0F172A] dark:text-[#F8FAFC]">My Artworks</h1>
+          <h1 className="text-2xl font-bold text-[#0F172A] dark:text-[#F8FAFC]">
+            My Artworks
+          </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-            Welcome back, <span className="font-semibold text-[#7C3AED]">{artistName}</span>! Manage your showcase gallery.
+            Welcome back,{" "}
+            <span className="font-semibold text-[#7C3AED]">{artistName}</span>!
+            Manage your showcase gallery.
           </p>
         </div>
-        
+
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -209,7 +229,7 @@ export default function MyArtworks() {
         </motion.button>
       </div>
 
-      {/* 📊 MANAGE ARTWORKS TABLE / LIST */}
+      {/* MANAGE ARTWORKS TABLE / LIST */}
       <div className="bg-[#FFFFFF] dark:bg-[#1E293B] border border-slate-100 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
         {loading ? (
           <div className="h-60 flex flex-col items-center justify-center gap-2 text-slate-400">
@@ -219,7 +239,9 @@ export default function MyArtworks() {
         ) : artworks.length === 0 ? (
           <div className="h-60 flex flex-col items-center justify-center text-center p-6 text-slate-400 dark:text-slate-500">
             <p className="text-sm font-medium">No artworks found.</p>
-            <p className="text-xs mt-1">Click "Add New Artwork" to start building your gallery.</p>
+            <p className="text-xs mt-1">
+              Click "Add New Artwork" to start building your gallery.
+            </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -234,23 +256,33 @@ export default function MyArtworks() {
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-sm font-medium text-[#0F172A] dark:text-[#F8FAFC]">
                 {artworks.map((art) => (
-                  <tr key={art._id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/10 transition-colors">
+                  <tr
+                    key={art._id}
+                    className="hover:bg-slate-50/50 dark:hover:bg-slate-900/10 transition-colors"
+                  >
                     <td className="px-6 py-4">
                       <div className="relative w-12 h-12 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100">
-                        <Image src={art.imageUrl} alt={art.title} fill className="object-cover" />
+                        <Image
+                          src={art.imageUrl}
+                          alt={art.title}
+                          fill
+                          className="object-cover"
+                        />
                       </div>
                     </td>
                     <td className="px-6 py-4 font-bold">{art.title}</td>
-                    <td className="px-6 py-4 text-purple-600 dark:text-purple-400 font-extrabold">${art.price}</td>
+                    <td className="px-6 py-4 text-purple-600 dark:text-purple-400 font-extrabold">
+                      ${art.price}
+                    </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <button 
+                        <button
                           onClick={() => openEditModal(art)}
                           className="p-2 rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/30 dark:text-blue-400 hover:scale-105 transition-transform cursor-pointer"
                         >
                           <FaEdit />
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleDelete(art._id)}
                           className="p-2 rounded-lg bg-red-50 text-[#EF4444] dark:bg-red-950/30 dark:text-red-400 hover:scale-105 transition-transform cursor-pointer"
                         >
@@ -270,15 +302,15 @@ export default function MyArtworks() {
       <AnimatePresence>
         {isModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={closeModal}
-              className="absolute inset-0 bg-black/60 backdrop-blur-xs" 
+              className="absolute inset-0 bg-black/60 backdrop-blur-xs"
             />
 
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
@@ -288,18 +320,26 @@ export default function MyArtworks() {
                 <h3 className="text-lg font-bold">
                   {editId ? "🎨 Edit Artwork" : "➕ Add New Artwork"}
                 </h3>
-                <button onClick={closeModal} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer text-slate-400">
+                <button
+                  onClick={closeModal}
+                  className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer text-slate-400"
+                >
                   <FaTimes />
                 </button>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-1">
-                  <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Title</label>
-                  <input 
-                    type="text" required
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                    Title
+                  </label>
+                  <input
+                    type="text"
+                    required
                     value={formData.title}
-                    onChange={(e) => setFormData({...formData, title: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, title: e.target.value })
+                    }
                     placeholder="Enter artwork title"
                     className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-transparent focus:outline-none focus:border-[#7C3AED] transition-all"
                   />
@@ -307,21 +347,30 @@ export default function MyArtworks() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Price ($)</label>
-                    <input 
-                      type="number" required
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                      Price ($)
+                    </label>
+                    <input
+                      type="number"
+                      required
                       value={formData.price}
-                      onChange={(e) => setFormData({...formData, price: e.target.value})}
+                      onChange={(e) =>
+                        setFormData({ ...formData, price: e.target.value })
+                      }
                       placeholder="e.g. 250"
                       className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-transparent focus:outline-none focus:border-[#7C3AED] transition-all"
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Category</label>
-                    <select 
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                      Category
+                    </label>
+                    <select
                       required
                       value={formData.category}
-                      onChange={(e) => setFormData({...formData, category: e.target.value})}
+                      onChange={(e) =>
+                        setFormData({ ...formData, category: e.target.value })
+                      }
                       className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-[#FFFFFF] dark:bg-[#1E293B] focus:outline-none focus:border-[#7C3AED] transition-all"
                     >
                       <option value="">Select Category</option>
@@ -334,26 +383,43 @@ export default function MyArtworks() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Description</label>
-                  <textarea 
-                    required rows={3}
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                    Description
+                  </label>
+                  <textarea
+                    required
+                    rows={3}
                     value={formData.description}
-                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, description: e.target.value })
+                    }
                     placeholder="Describe your masterpiece..."
                     className="w-full px-4 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-transparent focus:outline-none focus:border-[#7C3AED] transition-all resize-none"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Artwork Image</label>
-                  
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                    Artwork Image
+                  </label>
+
                   {formData.imageUrl ? (
                     <div className="relative w-full h-40 rounded-xl overflow-hidden border border-dashed border-purple-300 group">
-                      <Image src={formData.imageUrl} alt="Uploaded preview" fill className="object-cover" />
+                      <Image
+                        src={formData.imageUrl}
+                        alt="Uploaded preview"
+                        fill
+                        className="object-cover"
+                      />
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                         <label className="bg-white text-slate-800 text-xs px-3 py-1.5 rounded-lg cursor-pointer font-bold shadow-sm">
                           Change Image
-                          <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            className="hidden"
+                          />
                         </label>
                       </div>
                     </div>
@@ -362,28 +428,40 @@ export default function MyArtworks() {
                       {uploadingImg ? (
                         <div className="flex flex-col items-center gap-1">
                           <FaSpinner className="animate-spin text-xl text-[#7C3AED]" />
-                          <span className="text-xs text-slate-400">Processing file...</span>
+                          <span className="text-xs text-slate-400">
+                            Processing file...
+                          </span>
                         </div>
                       ) : (
                         <div className="flex flex-col items-center gap-1.5 text-slate-400 dark:text-slate-500">
                           <FaCloudUploadAlt className="text-3xl text-slate-300" />
-                          <span className="text-xs font-semibold">Click to upload artwork image</span>
+                          <span className="text-xs font-semibold">
+                            Click to upload artwork image
+                          </span>
                         </div>
                       )}
-                      <input type="file" accept="image/*" disabled={uploadingImg} onChange={handleImageUpload} className="hidden" />
+                      <input
+                        type="file"
+                        accept="image/*"
+                        disabled={uploadingImg}
+                        onChange={handleImageUpload}
+                        className="hidden"
+                      />
                     </label>
                   )}
                 </div>
 
                 <div className="flex gap-3 justify-end pt-2 border-t border-slate-100 dark:border-slate-800 mt-2">
-                  <button 
-                    type="button" onClick={closeModal}
+                  <button
+                    type="button"
+                    onClick={closeModal}
                     className="px-4 py-2 text-sm font-semibold rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 transition-all cursor-pointer text-slate-500"
                   >
                     Cancel
                   </button>
-                  <button 
-                    type="submit" disabled={uploadingImg}
+                  <button
+                    type="submit"
+                    disabled={uploadingImg}
                     className="px-5 py-2 text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-[#7C3AED] to-[#EC4899] shadow-md shadow-purple-500/10 transition-all cursor-pointer"
                   >
                     {editId ? "Save Changes" : "Create Upload"}

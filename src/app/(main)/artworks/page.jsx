@@ -1,186 +1,4 @@
-// "use client";
 
-// import { useState, useEffect, useCallback, Suspense } from "react";
-// import { useRouter, useSearchParams } from "next/navigation";
-// import Link from "next/link";
-// import Image from "next/image";
-// import { FaSearch, FaSlidersH } from "react-icons/fa";
-
-// // তোমার তৈরি করা কমন পেজিনেশন কম্পোনেন্ট
-// function Pagination({ currentPage, totalPages, onPageChange }) {
-//   const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
-//   if (totalPages <= 1) return null;
-
-//   return (
-//     <div className="flex items-center justify-center gap-2 mt-8 pb-4">
-//       <button
-//         disabled={currentPage === 1}
-//         onClick={() => onPageChange(currentPage - 1)}
-//         className="px-4 py-2 bg-white/5 border border-white/10 text-xs font-medium rounded-xl disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white/10 transition text-white"
-//       >
-//         Previous
-//       </button>
-//       {pages.map((page) => (
-//         <button
-//           key={page}
-//           onClick={() => onPageChange(page)}
-//           className={`w-9 h-9 text-xs font-bold rounded-xl transition ${
-//             currentPage === page
-//               ? "bg-purple-600 text-white shadow-lg shadow-purple-600/20"
-//               : "bg-white/5 border border-white/10 text-gray-400 hover:bg-white/10"
-//           }`}
-//         >
-//           {page}
-//         </button>
-//       ))}
-//       <button
-//         disabled={currentPage === totalPages}
-//         onClick={() => onPageChange(currentPage + 1)}
-//         className="px-4 py-2 bg-white/5 border border-white/10 text-xs font-medium rounded-xl disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white/10 transition text-white"
-//       >
-//         Next
-//       </button>
-//     </div>
-//   );
-// }
-
-// function BrowseArtworksContent() {
-//   const router = useRouter();
-//   const searchParams = useSearchParams();
-
-//   // URL থেকে প্যারামস রিড করা
-//   const searchParam = searchParams.get("search") || "";
-//   const categoryParam = searchParams.get("category") || "";
-//   const sortByParam = searchParams.get("sortBy") || "newest";
-//   const pageParam = parseInt(searchParams.get("page")) || 1;
-
-//   const [searchTerm, setSearchTerm] = useState(searchParam);
-//   const [artworks, setArtworks] = useState([]);
-//   const [totalPages, setTotalPages] = useState(1);
-//   const [loading, setLoading] = useState(true);
-
-//   // URL স্টেট ম্যানেজমেন্ট ফাংশন (তোমার আগের স্টাইল)
-//   const updateURL = (key, value) => {
-//     const params = new URLSearchParams(searchParams.toString());
-//     if (value) params.set(key, value);
-//     else params.delete(key);
-    
-//     if (key !== "page") params.set("page", "1");
-//     router.push(`/artworks?${params.toString()}`);
-//   };
-
-//   // তোমার ব্যাকএন্ড এপিআই এর সাথে কানেক্টেড ক্লায়েন্ট ফেচ মেথড
-//   useEffect(() => {
-//     setLoading(true);
-//     const query = new URLSearchParams({
-//       page: pageParam,
-//       ...(searchParam && { search: searchParam }),
-//       ...(categoryParam && { category: categoryParam }),
-//       ...(sortByParam && { sortBy: sortByParam }),
-//     });
-
-//     fetch(`http://localhost:5000/api/public/artworks?${query.toString()}`)
-//       .then((res) => res.json())
-//       .then((data) => {
-//         // ব্যাকএন্ড সরাসরি অ্যারে পাঠালে ডাটা সেট হবে, আর অবজেক্ট পাঠালে চেক করবে
-//         if (Array.isArray(data)) {
-//           setArtworks(data);
-//           setTotalPages(1); // ব্যাকএন্ডে পেজিনেশন লজিক অ্যাড করলে এটা ডাইনামিক হবে
-//         } else {
-//           setArtworks(data.artworks || []);
-//           setTotalPages(data.totalPages || 1);
-//         }
-//       })
-//       .catch((err) => console.error("Error fetching artworks:", err))
-//       .finally(() => setLoading(false));
-//   }, [searchParam, categoryParam, sortByParam, pageParam]);
-
-//   return (
-//     <div className="max-w-[1400px] mx-auto px-4 py-8 min-h-screen bg-white dark:bg-[#0F172A] text-[#0F172A] dark:text-[#F8FAFC]">
-//       <div className="text-center max-w-2xl mx-auto mb-10">
-//         <h1 className="text-4xl font-extrabold bg-gradient-to-r from-[#7C3AED] via-[#8B5CF6] to-[#EC4899] bg-clip-text text-transparent">Explore Masterpieces</h1>
-//       </div>
-
-//       {/* সার্চ ও ফিল্টার প্যানেল */}
-//       <div className="grid grid-cols-1 md:grid-cols-12 gap-4 bg-[#F8FAFC] dark:bg-[#1E293B] border border-slate-100 dark:border-slate-800 p-5 rounded-2xl mb-8">
-//         <div className="relative flex items-center md:col-span-5">
-//           <FaSearch className="absolute left-4 text-slate-400" />
-//           <input 
-//             type="text" 
-//             placeholder="Search by title or artist..."
-//             value={searchTerm}
-//             onChange={(e) => setSearchTerm(e.target.value)}
-//             onKeyDown={(e) => e.key === "Enter" && updateURL("search", searchTerm)}
-//             className="w-full pl-11 pr-4 py-2.5 text-sm bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:border-[#7C3AED]"
-//           />
-//         </div>
-
-//         <div className="md:col-span-3">
-//           <select
-//             value={categoryParam}
-//             onChange={(e) => updateURL("category", e.target.value)}
-//             className="w-full px-4 py-2.5 text-sm bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:border-[#7C3AED]"
-//           >
-//             <option value="">All Categories</option>
-//             <option value="Cyberpunk">Cyberpunk</option>
-//             <option value="Fantasy">Fantasy</option>
-//             <option value="Abstract">Abstract</option>
-//             <option value="Minimalism">Minimalism</option>
-//           </select>
-//         </div>
-
-//         <div className="md:col-span-4">
-//           <select
-//             value={sortByParam}
-//             onChange={(e) => updateURL("sortBy", e.target.value)}
-//             className="w-full px-4 py-2.5 text-sm bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:border-[#7C3AED]"
-//           >
-//             <option value="newest">Sort By: Newest</option>
-//             <option value="price-low">Price: Low to High</option>
-//             <option value="price-high">Price: High to Low</option>
-//           </select>
-//         </div>
-//       </div>
-
-//       {/* আর্টওয়ার্ক কার্ডস গ্রিড */}
-//       {loading ? (
-//         <div className="flex justify-center py-12"><div className="w-8 h-8 border-4 border-[#7C3AED] border-t-transparent rounded-full animate-spin"></div></div>
-//       ) : artworks.length > 0 ? (
-//         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-//           {artworks.map((art) => (
-//             <div key={art._id} className="bg-[#F8FAFC] dark:bg-[#1E293B] border border-slate-100 dark:border-slate-800 rounded-2xl p-3 flex flex-col justify-between">
-//               <Link href={`/artworks/${art._id}`}>
-//                 <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-slate-100 dark:bg-[#0F172A] mb-3">
-//                   <Image src={art.imageUrl} alt={art.title} fill className="object-cover" />
-//                 </div>
-//                 <div className="space-y-1">
-//                   <h3 className="font-bold text-sm sm:text-base line-clamp-1">{art.title}</h3>
-//                   <p className="text-xs text-slate-500">By {art.artistName}</p>
-//                 </div>
-//               </Link>
-//               <div className="flex items-center justify-between mt-4 pt-2 border-t border-slate-200/30">
-//                 <span className="text-sm font-extrabold text-[#7C3AED]">${art.price}</span>
-//                 <span className="text-[10px] font-bold uppercase bg-purple-50 dark:bg-purple-950 text-purple-600 dark:text-purple-300 px-2 py-0.5 rounded-md">{art.category}</span>
-//               </div>
-//             </div>
-//           ))}
-//         </div>
-//       ) : (
-//         <div className="text-center py-12 text-slate-400">No masterpieces found matching criteria.</div>
-//       )}
-
-//       <Pagination currentPage={pageParam} totalPages={totalPages} onPageChange={(targetPage) => updateURL("page", targetPage)} />
-//     </div>
-//   );
-// }
-
-// export default function BrowseArtworks() {
-//   return (
-//     <Suspense fallback={<div className="flex justify-center items-center min-h-[50vh]"><div className="w-8 h-8 border-4 border-[#7C3AED] border-t-transparent rounded-full animate-spin"></div></div>}>
-//       <BrowseArtworksContent />
-//     </Suspense>
-//   );
-// }
 
 
 "use client";
@@ -192,7 +10,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { FaSearch, FaSlidersH, FaSpinner, FaEye, FaPalette, FaSortAmountDown } from "react-icons/fa";
 
-// কমন পেজিনেশন কম্পোনেন্ট
+// page
 function Pagination({ currentPage, totalPages, onPageChange }) {
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
   if (totalPages <= 1) return null;
@@ -236,7 +54,7 @@ function BrowseArtworksContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // URL থেকে প্যারামস রিড করা
+  // URL
   const searchParam = searchParams.get("search") || "";
   const categoryParam = searchParams.get("category") || "";
   const sortByParam = searchParams.get("sortBy") || "newest";
@@ -252,7 +70,7 @@ function BrowseArtworksContent() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
 
-  // URL স্টেট ম্যানেজমেন্ট ফাংশন
+  // URL
   const updateURL = (key, value) => {
     const params = new URLSearchParams(searchParams.toString());
     if (value) params.set(key, value);
@@ -262,7 +80,7 @@ function BrowseArtworksContent() {
     router.push(`/artworks?${params.toString()}`);
   };
 
-  // এক্সপ্রেস ব্যাকএন্ড থেকে ডিরেক্ট ফেচ মেথড
+  // fetch
   useEffect(() => {
     setLoading(true);
     const query = new URLSearchParams({
@@ -275,7 +93,7 @@ function BrowseArtworksContent() {
       ...(maxPriceParam && { maxPrice: maxPriceParam }),
     });
 
-    fetch(`http://localhost:5000/api/public/artworks?${query.toString()}`)
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/public/artworks?${query.toString()}`)
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
@@ -376,7 +194,7 @@ function BrowseArtworksContent() {
         </div>
       </div>
 
-      {/* 📊 Responsive Cards Grid with Framer Motion Animation */}
+      {/* Responsive Cards Grid with Framer Motion Animation */}
       {loading ? (
         <div className="flex justify-center items-center py-24 flex-col gap-2">
           <FaSpinner className="animate-spin text-4xl text-[#7C3AED]" />
