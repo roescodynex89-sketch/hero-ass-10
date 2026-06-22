@@ -40,14 +40,14 @@ export default function ArtworkDetails() {
 
         // Public route - normal fetch
         const artRes = await fetch(
-          ` ${process.env.NEXT_PUBLIC_BACKEND_URL}/api/public/artworks/${id}`,
+           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/public/artworks/${id}`,
         );
         const artData = await artRes.json();
         setArtwork(artData);
 
         // Comments - public route
         const commentRes = await fetch(
-          `  ${process.env.NEXT_PUBLIC_BACKEND_URL}/api/comments/${id}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/comments/${id}`,
         );
         const commentData = await commentRes.json();
         setComments(commentData);

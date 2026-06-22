@@ -61,7 +61,7 @@ export default function BillingPage() {
     setLoading(plan.id);
     try {
       const data = await fetchWithAuth(
-        `/api/create-subscription-session`,
+        `/api/create-checkout-session`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

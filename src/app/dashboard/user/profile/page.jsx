@@ -15,7 +15,7 @@ import Image from "next/image";
 import { toast } from "sonner";
 
 import { authClient } from "@/lib/auth-client";
-
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 export default function UserProfileManagement() {
   const { data: session, isPending: sessionLoading } = authClient.useSession();
 
@@ -105,28 +105,21 @@ export default function UserProfileManagement() {
     const toastId = toast.loading("Saving updates to your ArtHub profile...");
 
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/user/profile/${userEmail}`,
-        {
-          method: "PUT",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: profile.name,
-            image: profile.image,
-            bio: profile.bio,
-            phoneNumber: profile.phone,
-          }),
-        },
-      );
+      await fetchWithAuth(`/api/user/profile/${userEmail}`, {
+        method: "PUT",
 
-      if (res.ok) {
-        toast.success("Collector profile updated successfully!", {
-          id: toastId,
-        });
-      } else {
-        toast.error("Failed to update profile data", { id: toastId });
-      }
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: profile.name,
+          image: profile.image,
+          bio: profile.bio,
+          phoneNumber: profile.phone,
+        }),
+      });
+
+      toast.success("Collector profile updated successfully!", {
+        id: toastId,
+      });
     } catch (error) {
       toast.error("Express backend server connection lost", { id: toastId });
     } finally {
