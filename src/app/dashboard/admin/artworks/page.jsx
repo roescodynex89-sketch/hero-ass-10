@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import Image from "next/image";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import {
   FaPalette,
   FaTrashAlt,
@@ -22,15 +23,10 @@ export default function AdminArtworksManagement() {
     try {
       setLoading(true);
 
-      const res = await fetch(
+      const data = await fetchWithAuth(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/public/artworks?limit=1000`,
-        {
-          credentials: "include",
-        },
       );
 
-      if (!res.ok) throw new Error("Failed to load artworks");
-      const data = await res.json();
       setArtworks(data.artworks || []);
     } catch (error) {
       console.error("Error loading artworks:", error);

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import Image from "next/image";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import {
   FaUsers,
   FaSearch,
@@ -22,14 +23,10 @@ export default function AdminUsersManagement() {
   const fetchGlobalUsers = async () => {
     try {
       setLoading(true);
-      const res = await fetch(
+      const data = await fetchWithAuth(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/users`,
-        {
-          credentials: "include",
-        },
       );
-      if (!res.ok) throw new Error("Failed to load user directories");
-      const data = await res.json();
+
       setUsers(data);
     } catch (error) {
       console.error("Error loading users:", error);
@@ -46,19 +43,17 @@ export default function AdminUsersManagement() {
   const handleRoleMutation = async (userId, currentName, targetRole) => {
     try {
       setUpdatingId(userId);
-      const res = await fetch(
+      await fetchWithAuth(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/users/role/${userId}`,
         {
           method: "PATCH",
-          credentials: "include",
+
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ role: targetRole }),
         },
       );
-
-      if (!res.ok) throw new Error("Role update failed");
 
       setUsers((prevUsers) =>
         prevUsers.map((user) =>

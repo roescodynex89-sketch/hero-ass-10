@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { authClient } from "@/lib/auth-client";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { toast } from "sonner";
 import {
   FaShoppingBag,
@@ -34,14 +35,10 @@ export default function UserOverview() {
 
     const fetchStats = async () => {
       try {
-        const res = await fetch(
+        const data = await fetchWithAuth(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/user/stats/${user.email}`,
-          {
-            credentials: "include",
-          },
         );
-        if (!res.ok) throw new Error("Failed to fetch statistics");
-        const data = await res.json();
+
         setStats(data);
       } catch (error) {
         console.error("Dashboard stats error:", error);

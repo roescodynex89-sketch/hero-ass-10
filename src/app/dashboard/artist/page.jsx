@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import {
   FaPalette,
   FaDollarSign,
@@ -38,34 +39,24 @@ export default function ArtistOverview() {
       try {
         setLoading(true);
 
-        const statsRes = await fetch(
+        const statsData = await fetchWithAuth(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/artist/stats/${artistEmail}`,
-          {
-            credentials: "include",
-          },
         );
-        if (!statsRes.ok) throw new Error("Failed to load stats");
-        const statsData = await statsRes.json();
+
         setStats(statsData);
 
-        const salesRes = await fetch(
+        const salesData = await fetchWithAuth(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/artist/sales/${artistEmail}`,
-          {
-            credentials: "include",
-          },
         );
-        if (salesRes.ok) {
-          const salesData = await salesRes.json();
 
-          const formattedChart = salesData.reverse().map((sale, index) => ({
-            name: sale.title
-              ? sale.title.slice(0, 10) + "..."
-              : `Art ${index + 1}`,
-            Earnings: Number(sale.price || 0),
-          }));
+        const formattedChart = salesData.reverse().map((sale, index) => ({
+          name: sale.title
+            ? sale.title.slice(0, 10) + "..."
+            : `Art ${index + 1}`,
+          Earnings: Number(sale.price || 0),
+        }));
 
-          setChartData(formattedChart);
-        }
+        setChartData(formattedChart);
       } catch (error) {
         console.error("Dashboard metrics load error:", error);
         toast.error("Could not sync your live performance metrics.");

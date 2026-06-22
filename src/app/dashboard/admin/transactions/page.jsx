@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import {
   FaExchangeAlt,
   FaSearch,
@@ -23,14 +24,10 @@ export default function AdminTransactionsHistory() {
     const fetchTransactions = async () => {
       try {
         setLoading(true);
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/transactions`,
-          {
-            credentials: "include",
-          },
+        const data = await fetchWithAuth(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/transactions`
         );
-        if (!res.ok) throw new Error("Failed to load transactions");
-        const data = await res.json();
+       
         setTransactions(data);
       } catch (error) {
         console.error("Transaction log fetch error:", error);

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { authClient } from "@/lib/auth-client";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { toast } from "sonner";
 import Image from "next/image";
 import Link from "next/link";
@@ -20,14 +21,10 @@ export default function BoughtCollection() {
 
     const fetchCollection = async () => {
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/user/purchases/${user.email}`,
-          {
-            credentials: "include",
-          },
+        const data = await fetchWithAuth(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/user/purchases/${user.email}`
         );
-        if (!res.ok) throw new Error("Failed to load collection");
-        const data = await res.json();
+
         setCollection(data);
       } catch (error) {
         console.error("Collection fetch error:", error);

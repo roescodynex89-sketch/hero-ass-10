@@ -14,6 +14,7 @@ import {
   FaPaperPlane,
 } from "react-icons/fa";
 import { authClient } from "@/lib/auth-client";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 
@@ -30,7 +31,6 @@ export default function ArtworkDetails() {
   const [commentSubmitting, setCommentSubmitting] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
 
-  // fetch
   useEffect(() => {
     if (!id) return;
 
@@ -38,23 +38,22 @@ export default function ArtworkDetails() {
       try {
         setLoading(true);
 
+        // Public route - normal fetch
         const artRes = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/public/artworks/${id}`,
+          ` ${process.env.NEXT_PUBLIC_BACKEND_URL}/api/public/artworks/${id}`,
         );
-        if (!artRes.ok) throw new Error("Artwork not found");
         const artData = await artRes.json();
         setArtwork(artData);
 
-        // cmnt
+        // Comments - public route
         const commentRes = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/comments/${id}`,
+          `  ${process.env.NEXT_PUBLIC_BACKEND_URL}/api/comments/${id}`,
         );
-        if (commentRes.ok) {
-          const commentData = await commentRes.json();
-          setComments(commentData);
-        }
+        const commentData = await commentRes.json();
+        setComments(commentData);
       } catch (err) {
         console.error(err);
+        toast.error("Failed to load artwork details.");
       } finally {
         setLoading(false);
       }
@@ -70,21 +69,12 @@ export default function ArtworkDetails() {
     }
     try {
       setActionLoading(true);
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/create-checkout-session`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({
-            artworkId: artwork._id,
-            price: artwork.price,
-            title: artwork.title,
-            userEmail: user.email,
-          }),
-        },
-      );
-      const data = await res.json();
+      const data = await fetchWithAuth("/api/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ artworkId: artwork._id }),
+      });
+
       if (data.url) {
         window.location.href = data.url;
       } else {
@@ -107,32 +97,21 @@ export default function ArtworkDetails() {
 
     try {
       setCommentSubmitting(true);
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/comments`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            artworkId: id,
-            userName: user.name,
-            userImage: user.image,
-            userEmail: user.email,
-            text: newComment,
-          }),
-        },
-      );
+      const freshComment = await fetchWithAuth("/api/comments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          artworkId: id,
+          text: newComment,
+          userImage: user.image,
+        }),
+      });
 
-      if (res.ok) {
-        const freshComment = await res.json();
-        setComments((prev) => [freshComment, ...prev]);
-        setNewComment("");
-        toast.success("Comment posted successfully!");
-      } else {
-        toast.error("Failed to post comment.");
-      }
+      setComments((prev) => [freshComment, ...prev]);
+      setNewComment("");
+      toast.success("Comment posted successfully!");
     } catch (error) {
-      toast.error("Network error while commenting.");
+      toast.error("You must purchase this artwork to comment.");
     } finally {
       setCommentSubmitting(false);
     }
@@ -146,23 +125,13 @@ export default function ArtworkDetails() {
 
     try {
       setActionLoading(true);
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/artist/artworks/${id}`,
-        {
-          method: "DELETE",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-        },
-      );
-
-      if (res.ok) {
-        toast.success("Artwork deleted successfully.");
-        router.push("/artworks");
-      } else {
-        toast.error("Failed to delete artwork.");
-      }
+      await fetchWithAuth(`/api/artist/artworks/${id}`, {
+        method: "DELETE",
+      });
+      toast.success("Artwork deleted successfully.");
+      router.push("/artworks");
     } catch (error) {
-      toast.error("Server communication error.");
+      toast.error("Failed to delete artwork.");
     } finally {
       setActionLoading(false);
     }
@@ -201,7 +170,7 @@ export default function ArtworkDetails() {
   const isOwner = user?.email === artwork.artistEmail;
 
   return (
-    <div className="max-w-[1100px] mx-auto p-4 md:p-6 text-[#0F172A] dark:text-[#F8FAFC] mt-6 space-y-12">
+    <div className="max-w-275 mx-auto p-4 md:p-6 text-[#0F172A] dark:text-[#F8FAFC] mt-6 space-y-12">
       <div className="flex items-center justify-between">
         <Link
           href="/artworks"
@@ -274,7 +243,7 @@ export default function ArtworkDetails() {
               <span className="text-xs uppercase font-black text-slate-400 tracking-wider">
                 Valuation
               </span>
-              <span className="text-3xl font-black bg-gradient-to-r from-[#7C3AED] to-[#EC4899] bg-clip-text text-transparent">
+              <span className="text-3xl font-black bg-linear-to-r from-[#7C3AED] to-[#EC4899] bg-clip-text text-transparent">
                 ${artwork.price}
               </span>
             </div>
@@ -285,7 +254,7 @@ export default function ArtworkDetails() {
               className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 text-white cursor-pointer ${
                 isOwner
                   ? "bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed shadow-none"
-                  : "bg-gradient-to-r from-[#7C3AED] to-[#EC4899] hover:opacity-95 active:scale-[0.99] shadow-md shadow-purple-500/10"
+                  : "bg-linear-to-r from-[#7C3AED] to-[#EC4899] hover:opacity-95 active:scale-[0.99] shadow-md shadow-purple-500/10"
               }`}
             >
               {actionLoading ? (

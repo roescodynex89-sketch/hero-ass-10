@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 import {
   FaUsers,
   FaPalette,
@@ -39,14 +40,11 @@ export default function AdminOverview() {
     const fetchAdminStats = async () => {
       try {
         setLoading(true);
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/stats`,
-          {
-            credentials: "include",
-          },
+        const data = await fetchWithAuth(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/stats`
+          
         );
-        if (!res.ok) throw new Error("Failed to fetch admin metrics");
-        const data = await res.json();
+        
         setStats(data);
       } catch (error) {
         console.error("Admin stats load error:", error);

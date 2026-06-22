@@ -5,24 +5,23 @@ import { motion } from "framer-motion";
 import { FaCalendarAlt, FaDollarSign, FaSpinner, FaUser } from "react-icons/fa";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
-
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 export default function SalesHistory() {
   const [sales, setSales] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   const { data: session } = authClient.useSession();
   const artistEmail = session?.user?.email;
 
   useEffect(() => {
     if (!artistEmail) return;
-    
+
     const fetchSalesHistory = async () => {
       try {
-        const res = await fetch(
+        const data = await fetchWithAuth(
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/artist/sales/${artistEmail}`,
-          { credentials: "include" }
         );
-        const data = await res.json();
+
         setSales(Array.isArray(data) ? data : []);
       } catch (error) {
         toast.error("Failed to load sales history");
@@ -37,7 +36,9 @@ export default function SalesHistory() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-[#0F172A] dark:text-[#F8FAFC]">Sales History</h1>
+        <h1 className="text-2xl font-bold text-[#0F172A] dark:text-[#F8FAFC]">
+          Sales History
+        </h1>
         <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
           Track your earnings and monitor who is purchasing your artwork.
         </p>
@@ -52,7 +53,9 @@ export default function SalesHistory() {
         ) : sales.length === 0 ? (
           <div className="h-60 flex flex-col items-center justify-center text-center p-6 text-slate-400 dark:text-slate-500">
             <p className="text-sm font-medium">No sales recorded yet.</p>
-            <p className="text-xs mt-1">Once a collector buys your art, the invoice will appear here.</p>
+            <p className="text-xs mt-1">
+              Once a collector buys your art, the invoice will appear here.
+            </p>
           </div>
         ) : (
           <div className="overflow-x-auto">

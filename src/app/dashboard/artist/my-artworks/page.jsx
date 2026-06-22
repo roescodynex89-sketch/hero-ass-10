@@ -42,12 +42,20 @@ export default function MyArtworks() {
     imageUrl: "",
   });
 
-  //
+  // fetchArtworks-e
   const fetchArtworks = useCallback(async () => {
     if (!artistEmail) return;
     try {
       setLoading(true);
-      const data = await getArtistArtworks(artistEmail);
+      const { data: tokenData } = await authClient.getToken();
+      const token = tokenData?.token;
+
+      if (!token) {
+        toast.error("Please login first");
+        return;
+      }
+
+      const data = await getArtistArtworks(artistEmail, token);
       if (data?.error) {
         toast.error(data.message || "Failed to load artworks");
       } else {
@@ -100,6 +108,7 @@ export default function MyArtworks() {
     }
   };
 
+  // handleSubmit-e
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.imageUrl)
@@ -107,42 +116,49 @@ export default function MyArtworks() {
     if (!artistEmail)
       return toast.error("User session not found. Please log in.");
 
+    const { data: tokenData } = await authClient.getToken();
+    const token = tokenData?.token;
+    if (!token) {
+      toast.error("Please login first");
+      return;
+    }
     const toastId = toast.loading(
       editId ? "Updating artwork..." : "Adding artwork...",
     );
-
     try {
       let result;
       if (editId) {
-        result = await updateArtwork(editId, formData);
+        result = await updateArtwork(editId, formData, token);
       } else {
         const payload = { ...formData, artistEmail, artistName };
-        result = await createArtwork(payload);
+        result = await createArtwork(payload, token);
       }
-
       if (result && !result.error) {
-        toast.success(
-          editId
-            ? "Artwork updated successfully!"
-            : "Artwork added successfully!",
-          { id: toastId },
-        );
+        toast.success(editId ? "Artwork updated!" : "Artwork added!", {
+          id: toastId,
+        });
         closeModal();
         fetchArtworks();
       } else {
         toast.error(result?.message || "Something went wrong", { id: toastId });
       }
     } catch (error) {
-      toast.error("Failed to communicate with server action", { id: toastId });
+      toast.error("Failed to communicate with server", { id: toastId });
     }
   };
 
+  // handleDelete-e
   const handleDelete = async (id) => {
     if (!confirm("Are you sure you want to delete this artwork?")) return;
-
+    const { data: tokenData } = await authClient.getToken();
+    const token = tokenData?.token;
+    if (!token) {
+      toast.error("Please login first");
+      return;
+    }
     const toastId = toast.loading("Deleting artwork...");
     try {
-      const result = await deleteArtwork(id);
+      const result = await deleteArtwork(id, token);
       if (result && !result.error) {
         toast.success("Artwork deleted successfully", { id: toastId });
         fetchArtworks();
