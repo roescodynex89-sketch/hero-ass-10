@@ -24,7 +24,7 @@ export default function AdminUsersManagement() {
     try {
       setLoading(true);
       const data = await fetchWithAuth(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/users`,
+        `/api/admin/users`,
       );
 
       setUsers(data);
@@ -44,7 +44,7 @@ export default function AdminUsersManagement() {
     try {
       setUpdatingId(userId);
       await fetchWithAuth(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/users/role/${userId}`,
+        `/api/admin/users/role/${userId}`,
         {
           method: "PATCH",
 

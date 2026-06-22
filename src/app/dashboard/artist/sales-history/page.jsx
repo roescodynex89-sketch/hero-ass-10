@@ -19,7 +19,7 @@ export default function SalesHistory() {
     const fetchSalesHistory = async () => {
       try {
         const data = await fetchWithAuth(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/artist/sales/${artistEmail}`,
+          `/api/artist/sales/${artistEmail}`,
         );
 
         setSales(Array.isArray(data) ? data : []);

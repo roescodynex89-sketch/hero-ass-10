@@ -24,7 +24,7 @@ export default function AdminArtworksManagement() {
       setLoading(true);
 
       const data = await fetchWithAuth(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/public/artworks?limit=1000`,
+        `/api/public/artworks?limit=1000`,
       );
 
       setArtworks(data.artworks || []);

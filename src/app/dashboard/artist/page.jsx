@@ -40,13 +40,13 @@ export default function ArtistOverview() {
         setLoading(true);
 
         const statsData = await fetchWithAuth(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/artist/stats/${artistEmail}`,
+          `/api/artist/stats/${artistEmail}`,
         );
 
         setStats(statsData);
 
         const salesData = await fetchWithAuth(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/artist/sales/${artistEmail}`,
+          `/api/artist/sales/${artistEmail}`,
         );
 
         const formattedChart = salesData.reverse().map((sale, index) => ({

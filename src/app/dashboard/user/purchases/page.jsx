@@ -25,7 +25,7 @@ export default function PurchaseHistory() {
     const fetchPurchases = async () => {
       try {
         const data = await  fetchWithAuth(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/user/purchases/${user.email}`
+          `/api/user/purchases/${user.email}`
          
         );
         

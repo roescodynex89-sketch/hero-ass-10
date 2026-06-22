@@ -36,7 +36,7 @@ export default function UserOverview() {
     const fetchStats = async () => {
       try {
         const data = await fetchWithAuth(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/user/stats/${user.email}`,
+          `/api/user/stats/${user.email}`,
         );
 
         setStats(data);

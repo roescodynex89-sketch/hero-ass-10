@@ -41,7 +41,7 @@ export default function AdminOverview() {
       try {
         setLoading(true);
         const data = await fetchWithAuth(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/stats`
+          `/api/admin/stats`
           
         );
         

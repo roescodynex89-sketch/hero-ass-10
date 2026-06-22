@@ -25,7 +25,7 @@ export default function AdminTransactionsHistory() {
       try {
         setLoading(true);
         const data = await fetchWithAuth(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/transactions`
+          `/api/admin/transactions`
         );
        
         setTransactions(data);
