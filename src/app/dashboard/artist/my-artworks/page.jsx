@@ -47,8 +47,10 @@ export default function MyArtworks() {
     if (!artistEmail) return;
     try {
       setLoading(true);
-      const { data: tokenData } = await authClient.getToken();
-      const token = tokenData?.token;
+      // const { data: tokenData } = await authClient.getToken();
+      // const token = tokenData?.token;
+      const tokenRes = await authClient.token();
+      const token = tokenRes?.data?.token;
 
       if (!token) {
         toast.error("Please login first");
@@ -116,8 +118,12 @@ export default function MyArtworks() {
     if (!artistEmail)
       return toast.error("User session not found. Please log in.");
 
-    const { data: tokenData } = await authClient.getToken();
-    const token = tokenData?.token;
+    // const { data: tokenData } = await authClient.getToken();
+    // const token = tokenData?.token;
+
+    const tokenRes = await authClient.token();
+    const token = tokenRes?.data?.token;
+
     if (!token) {
       toast.error("Please login first");
       return;
@@ -150,8 +156,11 @@ export default function MyArtworks() {
   // handleDelete-e
   const handleDelete = async (id) => {
     if (!confirm("Are you sure you want to delete this artwork?")) return;
-    const { data: tokenData } = await authClient.getToken();
-    const token = tokenData?.token;
+    // const { data: tokenData } = await authClient.getToken();
+    // const token = tokenData?.token;
+    const tokenRes = await authClient.token();
+    const token = tokenRes?.data?.token;
+
     if (!token) {
       toast.error("Please login first");
       return;

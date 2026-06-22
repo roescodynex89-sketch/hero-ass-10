@@ -13,7 +13,7 @@ import {
 import Image from "next/image";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
-
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 export default function ProfileManagement() {
   const { data: session, isPending: sessionLoading } = authClient.useSession();
 
@@ -102,26 +102,21 @@ export default function ProfileManagement() {
     const toastId = toast.loading("Saving changes to ArtHub...");
 
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/user/profile/${artistEmail}`,
-        {
-          method: "PUT",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: profile.name,
-            image: profile.image,
-            bio: profile.bio,
-            phoneNumber: profile.phone,
-          }),
-        },
-      );
+      await fetchWithAuth(`/api/user/profile/${artistEmail}`, {
+        method: "PUT",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: profile.name,
+          image: profile.image,
+          bio: profile.bio,
+          phoneNumber: profile.phone,
+        }),
+      });
 
-      if (res.ok) {
-        toast.success("Profile updated successfully!", { id: toastId });
-      } else {
-        toast.error("Failed to update profile", { id: toastId });
-      }
+      toast.success("Profile updated successfully!", {
+        id: toastId,
+      });
     } catch (error) {
       toast.error("Server connection lost", { id: toastId });
     } finally {
