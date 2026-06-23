@@ -324,6 +324,9 @@ export default function ArtworkDetails() {
           </div>
         </form>
 
+
+
+
         <div className="space-y-4 pt-2">
           {comments.length > 0 ? (
             comments.map((comment) => (
@@ -368,3 +371,9 @@ export default function ArtworkDetails() {
     </div>
   );
 }
+
+
+
+
+
+// ......
