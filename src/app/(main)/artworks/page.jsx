@@ -1,6 +1,3 @@
-
-
-
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
@@ -8,7 +5,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { FaSearch, FaSlidersH, FaSpinner, FaEye, FaPalette, FaSortAmountDown } from "react-icons/fa";
+import {
+  FaSearch,
+  FaSlidersH,
+  FaSpinner,
+  FaEye,
+  FaPalette,
+  FaSortAmountDown,
+} from "react-icons/fa";
 
 // page
 function Pagination({ currentPage, totalPages, onPageChange }) {
@@ -65,7 +69,7 @@ function BrowseArtworksContent() {
   const [searchTerm, setSearchTerm] = useState(searchParam);
   const [minPrice, setMinPrice] = useState(minPriceParam);
   const [maxPrice, setMaxPrice] = useState(maxPriceParam);
-  
+
   const [artworks, setArtworks] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -75,7 +79,7 @@ function BrowseArtworksContent() {
     const params = new URLSearchParams(searchParams.toString());
     if (value) params.set(key, value);
     else params.delete(key);
-    
+
     if (key !== "page") params.set("page", "1");
     router.push(`/artworks?${params.toString()}`);
   };
@@ -93,63 +97,58 @@ function BrowseArtworksContent() {
       ...(maxPriceParam && { maxPrice: maxPriceParam }),
     });
 
-    // fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/public/artworks?${query.toString()}`)
-    //   .then((res) => res.json())
-    //   .then((data) => {
-    //     if (Array.isArray(data)) {
-    //       setArtworks(data);
-    //       setTotalPages(1);
-    //     } else {
-    //       setArtworks(data.artworks || []);
-    //       setTotalPages(data.totalPages || 1);
-    //     }
-    //   })
-    fetch(`https://hero-ass-10-server.vercel.app/api/public/artworks?${query.toString()}`)
-  .then((res) => res.json())
-  .then((data) => {
-    // সরাসরি চেক করুন ডেটার ভেতর artworks নামের অ্যারেটি আছে কিনা
-    if (data && data.artworks) {
-      setArtworks(data.artworks);
-      setTotalPages(data.totalPages || 1);
-    } else if (Array.isArray(data)) {
-      // ব্যাকআপ হিসেবে যদি কখনো সরাসরি অ্যারে আসে
-      setArtworks(data);
-      setTotalPages(1);
-    } else {
-      setArtworks([]);
-    }
-  })
-  
+    fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/public/artworks?${query.toString()}`,
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setArtworks(data);
+          setTotalPages(1);
+        } else {
+          setArtworks(data.artworks || []);
+          setTotalPages(data.totalPages || 1);
+        }
+      })
+
       .catch((err) => console.error("Error fetching artworks:", err))
       .finally(() => setLoading(false));
-  }, [searchParam, categoryParam, sortByParam, minPriceParam, maxPriceParam, pageParam]);
+  }, [
+    searchParam,
+    categoryParam,
+    sortByParam,
+    minPriceParam,
+    maxPriceParam,
+    pageParam,
+  ]);
 
   return (
     <div className="max-w-[1400px] mx-auto px-4 py-8 min-h-screen bg-white dark:bg-[#0F172A] text-[#0F172A] dark:text-[#F8FAFC]">
-      
       {/* 🚀 Hero Headline Banner */}
       <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
         <h1 className="text-4xl md:text-5xl font-black tracking-tight bg-gradient-to-r from-[#7C3AED] via-[#8B5CF6] to-[#EC4899] bg-clip-text text-transparent">
           Explore Masterpieces
         </h1>
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          Discover and collect authentic digital and physical artworks from top global creators.
+          Discover and collect authentic digital and physical artworks from top
+          global creators.
         </p>
       </div>
 
       {/* 🔍 Interactive Search and Filter Controls Panel */}
       <div className="bg-[#F8FAFC] dark:bg-[#1E293B] border border-slate-200/60 dark:border-slate-800 p-5 rounded-2xl shadow-xs space-y-4 mb-10">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-          
           {/* Search Input */}
           <div className="relative flex items-center md:col-span-5">
             <FaSearch className="absolute left-4 text-slate-400" />
-            <input 
-              type="text" 
+            <input
+              type="text"
               placeholder="Search by artwork title or artist..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && updateURL("search", searchTerm)}
+              onKeyDown={(e) =>
+                e.key === "Enter" && updateURL("search", searchTerm)
+              }
               className="w-full pl-11 pr-4 py-2.5 text-sm bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:border-[#7C3AED] transition-all dark:text-white"
             />
           </div>
@@ -190,21 +189,25 @@ function BrowseArtworksContent() {
           <span className="text-xs font-bold uppercase tracking-wider text-slate-400 inline-flex items-center gap-1.5">
             <FaSlidersH /> Price Range:
           </span>
-          <input 
-            type="number" 
-            placeholder="Min $" 
+          <input
+            type="number"
+            placeholder="Min $"
             value={minPrice}
             onChange={(e) => setMinPrice(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && updateURL("minPrice", minPrice)}
+            onKeyDown={(e) =>
+              e.key === "Enter" && updateURL("minPrice", minPrice)
+            }
             className="w-28 px-3 py-1.5 text-xs bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:border-[#7C3AED] dark:text-white"
           />
           <span className="text-slate-400 text-xs">to</span>
-          <input 
-            type="number" 
-            placeholder="Max $" 
+          <input
+            type="number"
+            placeholder="Max $"
             value={maxPrice}
             onChange={(e) => setMaxPrice(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && updateURL("maxPrice", maxPrice)}
+            onKeyDown={(e) =>
+              e.key === "Enter" && updateURL("maxPrice", maxPrice)
+            }
             className="w-28 px-3 py-1.5 text-xs bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:border-[#7C3AED] dark:text-white"
           />
         </div>
@@ -229,12 +232,15 @@ function BrowseArtworksContent() {
               <div>
                 {/* Image Wrap Frame */}
                 <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-slate-100 dark:bg-[#0F172A] mb-3 border border-slate-200/20">
-                  <Image 
-                    src={art.imageUrl || "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5"} 
-                    alt={art.title} 
-                    fill 
+                  <Image
+                    src={
+                      art.imageUrl ||
+                      "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5"
+                    }
+                    alt={art.title}
+                    fill
                     sizes="(max-w-768px) 50vw, 25vw"
-                    className="object-cover group-hover:scale-105 transition-transform duration-500" 
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
 
@@ -244,7 +250,10 @@ function BrowseArtworksContent() {
                     {art.title}
                   </h3>
                   <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1">
-                    By <span className="font-semibold text-slate-700 dark:text-slate-300">{art.artistName}</span>
+                    By{" "}
+                    <span className="font-semibold text-slate-700 dark:text-slate-300">
+                      {art.artistName}
+                    </span>
                   </p>
                 </div>
               </div>
@@ -281,10 +290,10 @@ function BrowseArtworksContent() {
       )}
 
       {/* Pagination Integration */}
-      <Pagination 
-        currentPage={pageParam} 
-        totalPages={totalPages} 
-        onPageChange={(targetPage) => updateURL("page", targetPage)} 
+      <Pagination
+        currentPage={pageParam}
+        totalPages={totalPages}
+        onPageChange={(targetPage) => updateURL("page", targetPage)}
       />
     </div>
   );
@@ -292,11 +301,13 @@ function BrowseArtworksContent() {
 
 export default function BrowseArtworks() {
   return (
-    <Suspense fallback={
-      <div className="flex justify-center items-center min-h-[60vh] flex-col gap-2 bg-white dark:bg-[#0F172A]">
-        <FaSpinner className="animate-spin text-3xl text-[#7C3AED]" />
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="flex justify-center items-center min-h-[60vh] flex-col gap-2 bg-white dark:bg-[#0F172A]">
+          <FaSpinner className="animate-spin text-3xl text-[#7C3AED]" />
+        </div>
+      }
+    >
       <BrowseArtworksContent />
     </Suspense>
   );

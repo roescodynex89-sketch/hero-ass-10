@@ -13,7 +13,7 @@ export default function FeaturedArtworks() {
   useEffect(() => {
     setLoading(true);
 
-    fetch("http://localhost:5000/api/public/artworks?limit=4&sortBy=newest")
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/public/artworks?limit=4&sortBy=newest`)
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
