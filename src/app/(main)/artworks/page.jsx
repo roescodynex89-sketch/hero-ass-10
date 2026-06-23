@@ -93,17 +93,33 @@ function BrowseArtworksContent() {
       ...(maxPriceParam && { maxPrice: maxPriceParam }),
     });
 
+    // fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/public/artworks?${query.toString()}`)
+    //   .then((res) => res.json())
+    //   .then((data) => {
+    //     if (Array.isArray(data)) {
+    //       setArtworks(data);
+    //       setTotalPages(1);
+    //     } else {
+    //       setArtworks(data.artworks || []);
+    //       setTotalPages(data.totalPages || 1);
+    //     }
+    //   })
     fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/public/artworks?${query.toString()}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setArtworks(data);
-          setTotalPages(1);
-        } else {
-          setArtworks(data.artworks || []);
-          setTotalPages(data.totalPages || 1);
-        }
-      })
+  .then((res) => res.json())
+  .then((data) => {
+    // সরাসরি চেক করুন ডেটার ভেতর artworks নামের অ্যারেটি আছে কিনা
+    if (data && data.artworks) {
+      setArtworks(data.artworks);
+      setTotalPages(data.totalPages || 1);
+    } else if (Array.isArray(data)) {
+      // ব্যাকআপ হিসেবে যদি কখনো সরাসরি অ্যারে আসে
+      setArtworks(data);
+      setTotalPages(1);
+    } else {
+      setArtworks([]);
+    }
+  })
+  
       .catch((err) => console.error("Error fetching artworks:", err))
       .finally(() => setLoading(false));
   }, [searchParam, categoryParam, sortByParam, minPriceParam, maxPriceParam, pageParam]);
