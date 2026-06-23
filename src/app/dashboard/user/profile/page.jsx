@@ -116,16 +116,17 @@ export default function UserProfileManagement() {
         }),
       });
 
-      if (res.ok || res.success) {
-        toast.success("Collector profile updated successfully!", {
+      
+
+      if (res && (res.modifiedCount>0 ||res.matchedCount>0 || res.acknowledged)){
+toast.success("Collector profile updated successfully!", {
           id: toastId,
         });
-
         setTimeout(() => {
           window.location.reload();
-        }, 800);
+        }, 300);
       } else {
-        toast.success("Collector profile updated Failed!", {
+        toast.success("No Changes were  made to your profile", {
           id: toastId,
         });
       }
