@@ -104,7 +104,7 @@ function BrowseArtworksContent() {
     //       setTotalPages(data.totalPages || 1);
     //     }
     //   })
-    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/public/artworks?${query.toString()}`)
+    fetch(`https://hero-ass-10-server.vercel.app/api/public/artworks?${query.toString()}`)
   .then((res) => res.json())
   .then((data) => {
     // সরাসরি চেক করুন ডেটার ভেতর artworks নামের অ্যারেটি আছে কিনা
