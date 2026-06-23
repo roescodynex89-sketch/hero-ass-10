@@ -9,7 +9,6 @@ import {
   FaCloudUploadAlt,
   FaSpinner,
   FaSave,
-  FaIdCard,
 } from "react-icons/fa";
 import Image from "next/image";
 import { toast } from "sonner";
@@ -105,7 +104,7 @@ export default function UserProfileManagement() {
     const toastId = toast.loading("Saving updates to your ArtHub profile...");
 
     try {
-      await fetchWithAuth(`/api/user/profile/${userEmail}`, {
+      const res = await fetchWithAuth(`/api/user/profile/${userEmail}`, {
         method: "PUT",
 
         headers: { "Content-Type": "application/json" },
@@ -117,9 +116,19 @@ export default function UserProfileManagement() {
         }),
       });
 
-      toast.success("Collector profile updated successfully!", {
-        id: toastId,
-      });
+      if (res.ok || res.success) {
+        toast.success("Collector profile updated successfully!", {
+          id: toastId,
+        });
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 800);
+      } else {
+        toast.success("Collector profile updated Failed!", {
+          id: toastId,
+        });
+      }
     } catch (error) {
       toast.error("Express backend server connection lost", { id: toastId });
     } finally {
@@ -203,7 +212,7 @@ export default function UserProfileManagement() {
               </label>
               <input
                 type="text"
-                placeholder="+880 1XXX-XXXXXX"
+                placeholder="+000 1XXX-XXXXXX"
                 value={profile.phone}
                 onChange={(e) =>
                   setProfile({ ...profile, phone: e.target.value })

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+
 import {
   FaUser,
   FaPhone,
@@ -102,7 +102,7 @@ export default function ProfileManagement() {
     const toastId = toast.loading("Saving changes to ArtHub...");
 
     try {
-      await fetchWithAuth(`/api/user/profile/${artistEmail}`, {
+      const res = await fetchWithAuth(`/api/user/profile/${artistEmail}`, {
         method: "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -114,11 +114,21 @@ export default function ProfileManagement() {
         }),
       });
 
-      toast.success("Profile updated successfully!", {
-        id: toastId,
-      });
+      if (res.ok || res.success) {
+        toast.success("Collector profile updated successfully!", {
+          id: toastId,
+        });
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 800);
+      } else {
+        toast.success("Collector profile updated Failed!", {
+          id: toastId,
+        });
+      }
     } catch (error) {
-      toast.error("Server connection lost", { id: toastId });
+      toast.error("Express backend server connection lost", { id: toastId });
     } finally {
       setUpdating(false);
     }
