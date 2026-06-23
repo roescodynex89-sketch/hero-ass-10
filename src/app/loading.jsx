@@ -32,7 +32,7 @@ const Loading = () => {
         transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
         className="mt-6 text-sm font-semibold tracking-widest text-[#7C3AED] dark:text-[#7C3AED] uppercase"
       >
-        Loading ArtHub...
+        Loading ArtHub.............
       </motion.p>
     </div>
   );
