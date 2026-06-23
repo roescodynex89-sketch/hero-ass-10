@@ -48,15 +48,15 @@ export default function AdminArtworksManagement() {
 
     try {
       setActionLoading(id);
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/artworks/${id}`,
+      const data = await fetchWithAuth(
+        `/api/admin/artworks/${id}`,
         {
           method: "DELETE",
-          credentials: "include",
+         
         },
       );
 
-      if (!res.ok) throw new Error("Delete operation failed");
+      
 
       setArtworks((prev) => prev.filter((art) => art._id !== id));
       toast.success(`"${title}" has been purged from the asset index.`);

@@ -32,13 +32,13 @@ const Navbar = () => {
   useEffect(() => {
     setMounted(true);
   }, []);
-const router=  useRouter();
+  const router = useRouter();
   const toggleMobileMenu = () => setIsOpen(!isOpen);
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
   const handleLogout = async () => {
     await authClient.signOut();
-   router.push("/login");
+    router.push("/login");
   };
 
   if (!mounted) return null;
@@ -67,12 +67,6 @@ const router=  useRouter();
             >
               <FaImages /> <span>Artworks</span>
             </Link>
-            {/* <Link
-              href="/artists"
-              className="flex items-center space-x-1 hover:text-[#7C3AED] transition-colors"
-            >
-              <FaUsers /> <span>Artists</span>
-            </Link> */}
           </div>
 
           {/* Rs Actions */}
@@ -135,7 +129,7 @@ const router=  useRouter();
                   />
                 </button>
 
-                {/* 🗔 DROPDOWN OPTIONS */}
+                {/*  DROPDOWN OPTIONS */}
                 {isDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-52 rounded-xl border border-[#E2E8F0] bg-[#FFFFFF] py-2 shadow-xl dark:border-[#334155] dark:bg-[#1E293B] z-50">
                     <div className="px-4 py-1.5 border-b border-slate-100 dark:border-slate-800 mb-1">
@@ -164,6 +158,13 @@ const router=  useRouter();
                         >
                           Profile Settings
                         </Link>
+
+                        <Link
+                          href="/dashboard/artist/sales-history"
+                          className="block px-4 py-2 text-sm hover:bg-[#F8FAFC] dark:hover:bg-[#0F172A] transition-colors"
+                        >
+                          Sales History
+                        </Link>
                       </>
                     ) : role === "admin" ? (
                       <>
@@ -173,6 +174,21 @@ const router=  useRouter();
                         >
                           Admin Dashboard
                         </Link>
+
+                        <Link
+                          href="/dashboard/admin/transactions"
+                          className="block px-4 py-2 text-sm hover:bg-[#F8FAFC] dark:hover:bg-[#0F172A] transition-colors"
+                        >
+                          Transactions
+                        </Link>
+
+                        <Link
+                          href="/dashboard/admin/artworks"
+                          className="block px-4 py-2 text-sm hover:bg-[#F8FAFC] dark:hover:bg-[#0F172A] transition-colors"
+                        >
+                          Artworks Control
+                        </Link>
+
                         <Link
                           href="/dashboard/admin/users"
                           className="block px-4 py-2 text-sm hover:bg-[#F8FAFC] dark:hover:bg-[#0F172A] transition-colors"
@@ -188,6 +204,28 @@ const router=  useRouter();
                         >
                           User Dashboard
                         </Link>
+
+                        <Link
+                          href="/dashboard/user/billing"
+                          className="block px-4 py-2 text-sm hover:bg-[#F8FAFC] dark:hover:bg-[#0F172A] transition-colors"
+                        >
+                          Plan
+                        </Link>
+
+                        <Link
+                          href="/dashboard/user/collection"
+                          className="block px-4 py-2 text-sm hover:bg-[#F8FAFC] dark:hover:bg-[#0F172A] transition-colors"
+                        >
+                          User collection
+                        </Link>
+
+                        <Link
+                          href="/dashboard/user/purchases"
+                          className="block px-4 py-2 text-sm hover:bg-[#F8FAFC] dark:hover:bg-[#0F172A] transition-colors"
+                        >
+                          User Purchases
+                        </Link>
+
                         <Link
                           href="/dashboard/user/profile"
                           className="block px-4 py-2 text-sm hover:bg-[#F8FAFC] dark:hover:bg-[#0F172A] transition-colors"
@@ -243,12 +281,7 @@ const router=  useRouter();
           >
             Browse Artworks
           </Link>
-          {/* <Link
-            href="/artists"
-            className="block font-medium hover:text-[#7C3AED]"
-          >
-            Artists
-          </Link> */}
+
           <hr className="border-[#E2E8F0] dark:border-[#334155]" />
 
           {!user ? (
@@ -293,43 +326,93 @@ const router=  useRouter();
                 <>
                   <Link
                     href="/dashboard/artist"
-                    className="block text-sm py-1 text-[#7C3AED] font-semibold"
+                    className="block px-4 py-2 text-sm hover:bg-[#F8FAFC] dark:hover:bg-[#0F172A] transition-colors font-semibold text-[#7C3AED]"
                   >
                     Artist Dashboard
                   </Link>
                   <Link
                     href="/dashboard/artist/my-artworks"
-                    className="block text-sm py-1"
+                    className="block px-4 py-2 text-sm hover:bg-[#F8FAFC] dark:hover:bg-[#0F172A] transition-colors"
                   >
                     Manage Artworks
                   </Link>
                   <Link
                     href="/dashboard/artist/profile"
-                    className="block text-sm py-1"
+                    className="block px-4 py-2 text-sm hover:bg-[#F8FAFC] dark:hover:bg-[#0F172A] transition-colors"
                   >
                     Profile Settings
+                  </Link>
+
+                  <Link
+                    href="/dashboard/artist/sales-history"
+                    className="block px-4 py-2 text-sm hover:bg-[#F8FAFC] dark:hover:bg-[#0F172A] transition-colors"
+                  >
+                    Sales History
                   </Link>
                 </>
               ) : role === "admin" ? (
                 <>
-                  <Link href="/dashboard/admin" className="block text-sm py-1">
+                  <Link
+                    href="/dashboard/admin"
+                    className="block px-4 py-2 text-sm hover:bg-[#F8FAFC] dark:hover:bg-[#0F172A] transition-colors"
+                  >
                     Admin Dashboard
                   </Link>
+
+                  <Link
+                    href="/dashboard/admin/transactions"
+                    className="block px-4 py-2 text-sm hover:bg-[#F8FAFC] dark:hover:bg-[#0F172A] transition-colors"
+                  >
+                    Transactions
+                  </Link>
+
+                  <Link
+                    href="/dashboard/admin/artworks"
+                    className="block px-4 py-2 text-sm hover:bg-[#F8FAFC] dark:hover:bg-[#0F172A] transition-colors"
+                  >
+                    Artworks Control
+                  </Link>
+
                   <Link
                     href="/dashboard/admin/users"
-                    className="block text-sm py-1"
+                    className="block px-4 py-2 text-sm hover:bg-[#F8FAFC] dark:hover:bg-[#0F172A] transition-colors"
                   >
                     Manage Users
                   </Link>
                 </>
               ) : (
                 <>
-                  <Link href="/dashboard/user" className="block text-sm py-1">
+                  <Link
+                    href="/dashboard/user"
+                    className="block px-4 py-2 text-sm hover:bg-[#F8FAFC] dark:hover:bg-[#0F172A] transition-colors"
+                  >
                     User Dashboard
                   </Link>
+
+                  <Link
+                    href="/dashboard/user/billing"
+                    className="block px-4 py-2 text-sm hover:bg-[#F8FAFC] dark:hover:bg-[#0F172A] transition-colors"
+                  >
+                    Plan
+                  </Link>
+
+                  <Link
+                    href="/dashboard/collection"
+                    className="block px-4 py-2 text-sm hover:bg-[#F8FAFC] dark:hover:bg-[#0F172A] transition-colors"
+                  >
+                    User collection
+                  </Link>
+
+                  <Link
+                    href="/dashboard/user/purchases"
+                    className="block px-4 py-2 text-sm hover:bg-[#F8FAFC] dark:hover:bg-[#0F172A] transition-colors"
+                  >
+                    User Purchases
+                  </Link>
+
                   <Link
                     href="/dashboard/user/profile"
-                    className="block text-sm py-1"
+                    className="block px-4 py-2 text-sm hover:bg-[#F8FAFC] dark:hover:bg-[#0F172A] transition-colors"
                   >
                     My Profile
                   </Link>

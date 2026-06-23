@@ -1,5 +1,3 @@
-"use client";
-
 import { authClient } from "./auth-client";
 
 export const fetchWithAuth = async (endpoint, options = {}) => {
@@ -8,7 +6,6 @@ export const fetchWithAuth = async (endpoint, options = {}) => {
   const tokenRes = await authClient.token();
   const token = tokenRes?.data?.token;
 
-  console.log("token", token);
   const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}${endpoint}`, {
     ...options,
     headers: {
