@@ -276,7 +276,7 @@ const Navbar = () => {
             Home
           </Link>
           <Link
-            href="/browse"
+            href="/artworks"
             className="block font-medium hover:text-[#7C3AED]"
           >
             Browse Artworks
@@ -397,7 +397,7 @@ const Navbar = () => {
                   </Link>
 
                   <Link
-                    href="/dashboard/collection"
+                    href="/dashboard/user/collection"
                     className="block px-4 py-2 text-sm hover:bg-[#F8FAFC] dark:hover:bg-[#0F172A] transition-colors"
                   >
                     User collection
