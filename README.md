@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🎨 ArtHub – Online Art Marketplace
 
-## Getting Started
+![ArtHub Preview](https://i.ibb.co.com/5HC9X0C/set1.png)
 
-First, run the development server:
+A feature-rich, dynamic digital platform built using Next.js and Tailwind CSS that connects art enthusiasts, collectors, and buyers with world-class digital artists. Users can browse, purchase, review original artworks, and manage their experience through role-based dashboards.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🌐 Live Demo & Credentials
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+- **Live Site**: [https://hero-ass-10.vercel.app](https://hero-ass-10.vercel.app)
+- **Client Repository**: [https://github.com/roescodynex89-sketch/hero-ass-10](https://github.com/roescodynex89-sketch/hero-ass-10)
+- **Server Repository**: [https://github.com/roescodynex89-sketch/hero-ass-10-server](https://github.com/roescodynex89-sketch/hero-ass-10-server)
+- **Admin Access**:
+  - **Email**: `admin@arthub.com`
+  - **Password**: `Admin@123`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## ✨ Key Features
 
-To learn more about Next.js, take a look at the following resources:
+- **🔐 Authentication & Role-Based Access Control**:
+  - Secure Email/Password registration & login alongside Google OAuth using **BetterAuth**.
+  - Dynamic user roles: **User (Buyer)**, **Artist**, and **Admin**.
+  - Token-based persistent authentication with JWT.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **🎨 Marketplace & Dynamic Browse**:
+  - Publicly accessible gallery with search, category filtering, price range filter, and multi-tier sorting.
+  - Server-side/client-side pagination support.
+  - Sold status badges for purchased artworks.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **💳 Stripe Integration & Tier System**:
+  - Direct Stripe Checkout integration for purchasing artwork and upgrading subscription tiers (**Free**, **Pro**, **Premium**).
 
-## Deploy on Vercel
+- **💬 Verified Purchase Comment System**:
+  - Exclusive comment & feedback feature on artwork details pages available only to verified buyers.
+  - Full CRUD operations on user's own comments.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **📊 Role-Specific Responsive Dashboards**:
+  - **User**: View purchase history, bought gallery, manage subscription tier, and edit profile.
+  - **Artist**: Manage created artworks (Add, Edit, Delete with imgBB image host), view real-time sales history.
+  - **Admin**: Overview charts, manage users & roles, track total system transactions, and moderate artwork listings.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **🌐 Interactive UI & UX**:
+  - Fully responsive, modern design with clean dark/light mode toggle.
+  - Eye-catching animations, skeleton loaders for fetch states, and custom 404/Error Boundary screens.
+
+---
+
+## 🛠️ Tech Stack & Packages Used
+
+- **Framework**: Next.js 14+ (App Router)
+- **Styling**: Tailwind CSS,React (Icons), Framer Motion
+- **State & Auth**: BetterAuth, Axios / TanStack Query
+- **Payment & Uploads**: Stripe SDK, imgBB API Integration
+- **Charts**: Recharts
+
+---
+👨‍💻 Developed By
+
+Estiak Aktar Roes
+
+Full Stack Developer
